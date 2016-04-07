@@ -112,7 +112,7 @@ class SqlDemoSpider(BaseSpider):
                     continue
                 s_title = site.select('@title').extract()[0]
                 s_link = site.select('@href').extract()[0]
-                # # 检查是否包含"中字"
+                # 检查是否包含"中字"
                 # if not checkTitle(s_title):
                 #     continue
                 item['title'] = s_title
