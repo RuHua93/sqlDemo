@@ -23,9 +23,6 @@ def dateNow():
             'hour': str(date_t.hour), 'minute': str(date_t.minute), 'second': str(date_t.second),}
     return date
 
-# 作为ctime
-start_time = dateNow()
-
 # 补齐字符串前导0
 def addZero(str, slen):
     len_t = len(str)
@@ -35,7 +32,7 @@ def addZero(str, slen):
 
 # 把中文时间转成datetime,此函数仅对韩饭网有效
 def transTime(str):
-    date = start_time
+    date = dateNow()
     try:
         cur = ""
         cnt = 0
@@ -63,7 +60,7 @@ def transTime(str):
     except Exception, e:
         print e
         traceback.print_exc()
-        date = start_time
+        date = dateNow()
     return date
 
 
@@ -92,8 +89,8 @@ class SqlDemoSpider(BaseSpider):
             # print "######################"
             sites = art.select('header/h2/a')
             item = SqlDemoItem()
-            item['time'] = start_time
-            item['ctime'] = start_time
+            item['time'] = dateNow()
+            item['ctime'] = dateNow()
             item['src'] = "韩饭网".decode("utf8")
             item['rate'] = 0.0
             item['rnum'] = 0.0
@@ -124,16 +121,19 @@ class SqlDemoSpider(BaseSpider):
             # print "######################"
             item['ctime'] = formatTime(item['ctime'])
             item['time'] = formatTime(item['time'])
-            print "#######################"
-            print "start_time:" + formatTime(start_time)
-            print "#######################"
             if (not item.has_key('title')) or (not item.has_key('link')) or (not item.has_key('time')):
                 continue
             yield item
+        # if next_page is not None:
+        #     yield Request(url=next_page, callback=self.parse_item)
+
         lis = hxs.select('//li')
         next_page = None
         for li in lis:
             if li.select('@class').extract() and li.select('@class').extract()[0] == "next-page":
+                print "########"
+                print li.select('a/@href').extract()
+                print "########"
                 next_page = li.select('a/@href').extract()[0]
         if next_page is not None:
             yield Request(url=next_page, callback=self.parse)

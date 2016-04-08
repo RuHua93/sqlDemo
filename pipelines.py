@@ -21,11 +21,13 @@ class SqlDemoPipeline(object):
         csr.execute("select title from sqlDemo where link = ?", (item['link'],))
         recs = csr.fetchall()
         # upd = False
+        # 第一次加入数据库
         if len(recs) == 0:
             self.conn.execute("insert into sqlDemo values(?,?,?,?,?,?,?)",
-                              (item['title'], item['link'], item['src'], item['time'],
+                              (item['title'], item['link'], item['src'], item['ctime'],
                                item['ctime'], item['rate'], item['rnum']))
             # upd = True
+        # 更新数据库
         elif (len(recs[0]) != 0) and (recs[0][0] != item['title']):
             self.conn.execute("update sqlDemo set title = ?, time = ? where\
                               link = ?", (item['title'], item['time'], item['link']))
