@@ -1,4 +1,5 @@
 # coding=utf-8
+from scrapy.http import Request
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from sqlDemo.items import SqlDemoItem
@@ -22,6 +23,9 @@ def dateNow():
             'hour': str(date_t.hour), 'minute': str(date_t.minute), 'second': str(date_t.second),}
     return date
 
+# 作为ctime
+start_time = dateNow()
+
 # 补齐字符串前导0
 def addZero(str, slen):
     len_t = len(str)
@@ -31,17 +35,13 @@ def addZero(str, slen):
 
 # 把中文时间转成datetime,此函数仅对韩饭网有效
 def transTime(str):
-    date = dateNow()
-    print str
+    date = start_time
     try:
         cur = ""
         cnt = 0
-        print len(str)
         for i in range(len(str)):
-            print str[i].isdigit()
             if (str[i].isdigit()):
                 cur = cur + str[i]
-                print "cur:" + cur
                 if ((i == len(str)-1) or not str[i+1].isdigit()):
                     if (cnt == 0):
                         date['year'] = addZero(cur, 4)
@@ -59,12 +59,11 @@ def transTime(str):
                     cnt = cnt + 1
                     if (cnt == 6):
                         break
-            print cnt
             continue
     except Exception, e:
         print e
         traceback.print_exc()
-        date = dateNow()
+        date = start_time
     return date
 
 
@@ -81,8 +80,8 @@ class SqlDemoSpider(BaseSpider):
     ]
 
     def parse(self,response):
-        arts = HtmlXPathSelector(response).select('//article')
-        items = []
+        hxs = HtmlXPathSelector(response)
+        arts = hxs.select('//article')
         for art in arts:
             # print "######################"
             # print art.extract()
@@ -93,8 +92,8 @@ class SqlDemoSpider(BaseSpider):
             # print "######################"
             sites = art.select('header/h2/a')
             item = SqlDemoItem()
-            item['time'] = dateNow()
-            item['ctime'] = dateNow()
+            item['time'] = start_time
+            item['ctime'] = start_time
             item['src'] = "韩饭网".decode("utf8")
             item['rate'] = 0.0
             item['rnum'] = 0.0
@@ -125,7 +124,16 @@ class SqlDemoSpider(BaseSpider):
             # print "######################"
             item['ctime'] = formatTime(item['ctime'])
             item['time'] = formatTime(item['time'])
+            print "#######################"
+            print "start_time:" + formatTime(start_time)
+            print "#######################"
             if (not item.has_key('title')) or (not item.has_key('link')) or (not item.has_key('time')):
                 continue
-            items.append(item)
-        return items
+            yield item
+        lis = hxs.select('//li')
+        next_page = None
+        for li in lis:
+            if li.select('@class').extract() and li.select('@class').extract()[0] == "next-page":
+                next_page = li.select('a/@href').extract()[0]
+        if next_page is not None:
+            yield Request(url=next_page, callback=self.parse)
