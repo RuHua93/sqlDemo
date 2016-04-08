@@ -43,15 +43,6 @@ class SqlDemoPipeline(object):
     def finalize(self):
         if self.conn is not None:
             self.conn.commit()
-
-            csr = self.conn.cursor()
-            csr.execute("select * from sqlDemo")
-            recs = csr.fetchall()
-            # for rec in recs:
-            #     for item in rec:
-            #         print "@"+item+"@"
-            #     print "############"
-
             self.conn.close()
             self.conn = None
 

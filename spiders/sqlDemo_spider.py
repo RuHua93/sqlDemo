@@ -11,12 +11,6 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-# 检查title是否含"中字"
-def checkTitle(str):
-    if "中字" in str:
-        return True
-    return False
-
 def dateNow():
     date_t = datetime.datetime.now()
     date = {'year': str(date_t.year), 'month': str(date_t.month), 'day': str(date_t.day),
@@ -80,13 +74,7 @@ class SqlDemoSpider(BaseSpider):
         hxs = HtmlXPathSelector(response)
         arts = hxs.select('//article')
         for art in arts:
-            # print "######################"
-            # print art.extract()
-            # print "######################"
             times = art.select('p/time')
-            # print "######################"
-            # print times.extract()
-            # print "######################"
             sites = art.select('header/h2/a')
             item = SqlDemoItem()
             item['time'] = dateNow()
@@ -100,40 +88,24 @@ class SqlDemoSpider(BaseSpider):
                 s_time = time.select('text()').extract()[0]
                 # 处理时间格式
                 item['ctime'] = transTime(s_time)
-            # print "######################"
-            # print sites.extract()
-            # print "######################"
             for site in sites:
                 if not site.select('@title').extract() or not site.select('@href').extract():
                     continue
                 s_title = site.select('@title').extract()[0]
                 s_link = site.select('@href').extract()[0]
-                # 检查是否包含"中字"
-                # if not checkTitle(s_title):
-                #     continue
                 item['title'] = s_title
                 item['link'] = s_link
                 break
-            # print "######################"
-            # print "title"+item['title']
-            # print "link"+item['link']
-            # print "time"+item['time']
-            # print "######################"
             item['ctime'] = formatTime(item['ctime'])
             item['time'] = formatTime(item['time'])
             if (not item.has_key('title')) or (not item.has_key('link')) or (not item.has_key('time')):
                 continue
             yield item
-        # if next_page is not None:
-        #     yield Request(url=next_page, callback=self.parse_item)
-
+        # 构造Request爬取下一页
         lis = hxs.select('//li')
         next_page = None
         for li in lis:
             if li.select('@class').extract() and li.select('@class').extract()[0] == "next-page":
-                print "########"
-                print li.select('a/@href').extract()
-                print "########"
                 next_page = li.select('a/@href').extract()[0]
         if next_page is not None:
             yield Request(url=next_page, callback=self.parse)
