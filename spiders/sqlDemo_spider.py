@@ -24,7 +24,7 @@ def addZero(str, slen):
         str = "0" + str
     return str
 
-# 把中文时间转成datetime,此函数仅对韩饭网有效
+# 把中文日期转成字典类型的日期,此函数仅对韩饭网有效
 def transTime(str):
     date = dateNow()
     try:
@@ -58,7 +58,7 @@ def transTime(str):
     return date
 
 
-# 将日字典类型的期改为SQLite的标准格式字符串
+# 将字典类型的日期改为SQLite的标准格式datetime字符串
 def formatTime(time_d):
     return str(time_d['year'])+"-"+str(time_d['month'])+"-"+str(time_d['day'])+\
            " "+str(time_d['hour'])+":"+str(time_d['minute'])+":"+str(time_d['second'])
@@ -76,6 +76,7 @@ class SqlDemoSpider(BaseSpider):
         for art in arts:
             times = art.select('p/time')
             sites = art.select('header/h2/a')
+            # 抓取单条信息
             item = SqlDemoItem()
             item['time'] = dateNow()
             item['ctime'] = dateNow()
