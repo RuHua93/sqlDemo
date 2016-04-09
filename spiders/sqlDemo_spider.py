@@ -57,7 +57,6 @@ def transTime(str):
         date = dateNow()
     return date
 
-
 # 将字典类型的日期改为SQLite的标准格式datetime字符串
 def formatTime(time_d):
     return str(time_d['year'])+"-"+str(time_d['month'])+"-"+str(time_d['day'])+\
