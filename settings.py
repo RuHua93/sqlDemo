@@ -1,3 +1,4 @@
+# coding=utf-8
 BOT_NAME = 'sqlDemo'
 BOT_VERSION = '1.0'
 
