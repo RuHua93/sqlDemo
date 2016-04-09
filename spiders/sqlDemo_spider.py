@@ -24,7 +24,7 @@ def addZero(str, slen):
         str = "0" + str
     return str
 
-# 把中文日期字符串转成字典类型的日期,此函数仅对韩饭网有效
+# 把中文日期转成字典类型的日期,此函数仅对韩饭网有效
 def transTime(str):
     date = dateNow()
     try:
