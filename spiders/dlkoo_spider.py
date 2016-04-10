@@ -5,7 +5,6 @@ from os import path
 from scrapy.http import Request
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-from sqlDemo.pipelines import SqlDemoPipeline
 import sqlite3
 
 import datetime, time
