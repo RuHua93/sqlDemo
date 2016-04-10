@@ -1,9 +1,10 @@
 # coding=utf-8
 import sys
+import datetime
 from scrapy.http import Request
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-from sqlDemo.funcs import dateNow, transTime, formatTime
+from sqlDemo.funcs import transTime, formatTime
 from sqlDemo.items import SqlDemoItem
 
 # 编码改成utf8
@@ -25,8 +26,8 @@ class SqlDemoSpider(BaseSpider):
             sites = art.select('header/h2/a')
             # 抓取单条信息
             item = SqlDemoItem()
-            item['time'] = dateNow()
-            item['ctime'] = dateNow()
+            item['time'] = formatTime(datetime.datetime.now())
+            item['ctime'] = formatTime(datetime.datetime.now())
             item['src'] = "韩饭网".decode("utf8")
             item['rate'] = 0.0
             item['rnum'] = 0.0
@@ -35,7 +36,9 @@ class SqlDemoSpider(BaseSpider):
                     continue
                 s_time = time.select('text()').extract()[0]
                 # 处理时间格式
-                item['ctime'] = transTime(s_time)
+                item['ctime'] = formatTime(transTime(s_time))
+                item['time'] = item['ctime']
+                break
             for site in sites:
                 if not site.select('@title').extract() or not site.select('@href').extract():
                     continue
@@ -44,8 +47,6 @@ class SqlDemoSpider(BaseSpider):
                 item['title'] = s_title
                 item['link'] = s_link
                 break
-            item['ctime'] = formatTime(item['ctime'])
-            item['time'] = formatTime(item['time'])
             if (not item.has_key('title')) or (not item.has_key('link')) or (not item.has_key('time')):
                 continue
             yield item
