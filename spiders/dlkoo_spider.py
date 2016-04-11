@@ -1,14 +1,12 @@
 # coding=utf-8
-import string
 import sys
+import sqlite3
+import datetime, time
+import string
 from os import path
 from scrapy.http import Request
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-import sqlite3
-
-import datetime, time
-
 from sqlDemo.funcs import transTime, formatTime
 from sqlDemo.items import SqlDemoItem
 
@@ -18,15 +16,15 @@ sys.setdefaultencoding("utf-8")
 
 class DlkooSpider(BaseSpider):
     name = "dlkoo"
-    allowed_domains = ["www.dlkoo.com"]
-    main_domain = "http://www.dlkoo.com"
+    allowed_domains = ["dlkoo.com"]
+    main_domain = "http://dlkoo.com"
     # 前十页基本包含了全部近期资源
     # 故只爬前十页
     start_urls = [
-        "http://dlkoo.com/down/5"
+        "http://dlkoo.com/down/5/"
     ]
-    for i in range(2,10):
-        start_urls.append("http://dlkoo.com/down/5/index_"+str(i)+".htm")
+    # for i in range(2,10):
+    #     start_urls.append("http://dlkoo.com/down/5/index_"+str(i)+".htm")
     still = True
 
     # 获取大连生活网当前已爬网页的最新更新时间
@@ -42,8 +40,12 @@ class DlkooSpider(BaseSpider):
             last_s = time.strptime(re[0], "%Y-%m-%d %X")
             ye, mo, da, ho, mi, se = last_s[0:6]
             last_scraped = datetime.datetime(ye, mo, da, ho, mi, se)
+    # print "##############"
+    # print last_scraped
 
     def parse(self, response):
+        # print "#############"
+        # print self.still
         if not self.still:
             return
         hxs = HtmlXPathSelector(response)
@@ -55,9 +57,17 @@ class DlkooSpider(BaseSpider):
                 item_url = self.main_domain + hrf
                 yield Request(url=item_url, callback=self.parse_item)
         cur_url = response.url
-        cur_pn = cur_url[22]
+        # 计算下一页
+        # print "############"
+        # print cur_url
+        if len(cur_url) < 30:
+            cur_pn = "1"
+        else:
+            cur_pn = cur_url[30]
         nxt_pn = string.atoi(cur_pn) + 1
         np_url = ("http://dlkoo.com/down/5/index_"+str(nxt_pn)+".htm")
+        # print "##############"
+        # print np_url
         yield  Request(url=np_url, callback=self.parse)
 
     def parse_item(self, response):
