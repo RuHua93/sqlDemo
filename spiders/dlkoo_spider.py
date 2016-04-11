@@ -28,15 +28,18 @@ class DlkooSpider(BaseSpider):
     still = True
 
     # 获取大连生活网当前已爬网页的最新更新时间
-    # 如果当前数据库没有记录则设置为min
+    # 只爬取在这之后的网页
+    # 如果当前数据库没有记录则设置为 datetime.datetime.min
     filename = "/tmpdb/test.db"
     last_scraped = datetime.datetime.min
     if path.exists(filename):
         conn = sqlite3.connect(filename)
         csr = conn.cursor()
-        csr.execute("select max(time) from sqlDemo")
+        csr.execute("select max(time) from sqlDemo where src = '大连生活网'")
         res = csr.fetchall()
         for re in res:
+            if re[0] is None:
+                continue
             last_s = time.strptime(re[0], "%Y-%m-%d %X")
             ye, mo, da, ho, mi, se = last_s[0:6]
             last_scraped = datetime.datetime(ye, mo, da, ho, mi, se)
@@ -65,10 +68,11 @@ class DlkooSpider(BaseSpider):
         else:
             cur_pn = cur_url[30]
         nxt_pn = string.atoi(cur_pn) + 1
-        np_url = ("http://dlkoo.com/down/5/index_"+str(nxt_pn)+".htm")
-        # print "##############"
-        # print np_url
-        yield  Request(url=np_url, callback=self.parse)
+        if nxt_pn <= 10:
+            np_url = ("http://dlkoo.com/down/5/index_"+str(nxt_pn)+".htm")
+            # print "##############"
+            # print np_url
+            yield  Request(url=np_url, callback=self.parse)
 
     def parse_item(self, response):
         item = SqlDemoItem()
