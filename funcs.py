@@ -1,5 +1,6 @@
 # coding=utf-8
 # 通用功能函数
+
 import datetime, time
 import traceback
 import sys

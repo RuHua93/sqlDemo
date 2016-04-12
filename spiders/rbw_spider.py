@@ -27,13 +27,10 @@ class RbwSpider(BaseSpider):
     last_scraped = getLastScraped('热播网')
 
     def parse(self, response):
-        print "##################"
-        print self.still
         if not self.still:
             return
         hxs = HtmlXPathSelector(response)
         lis = hxs.select('//li')
-        print lis
         for li in lis:
             select_str = 'div[@class="lionhover"]/div[@class="right_info"]/span[@class="date"]/text()'
             time_s = None
@@ -63,5 +60,4 @@ class RbwSpider(BaseSpider):
         nxt_pn = string.atoi(cur_pn) + 1
         if nxt_pn <= 10:
             np_url = ("http://www.y3600.com/hanju/index_"+str(nxt_pn)+".html")
-            print np_url
             yield Request(url=np_url, callback=self.parse)

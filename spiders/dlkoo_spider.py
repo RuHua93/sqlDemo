@@ -19,6 +19,7 @@ class DlkooSpider(BaseSpider):
     start_urls = [
         "http://dlkoo.com/down/5/"
     ]
+
     # 是否继续爬取
     still = True
 
@@ -64,7 +65,7 @@ class DlkooSpider(BaseSpider):
         if rtimes:
             rtime = rtimes[0]
             upd_time = rtime.extract()
-            # datetime 类型的time
+            # datetime 类型的 time
             dt_time = transTime(upd_time)
             std_time = formatTime(dt_time)
             item['time'] = item['ctime'] = std_time
