@@ -37,7 +37,7 @@ class DlkooSpider(BaseSpider):
             txt = atag.select('text()').extract()[0]
             if u"韩剧" in txt:
                 item_url = self.main_domain + hrf
-                yield Request(url=item_url, callback=self.parse_item)
+                yield Request(url=item_url, callback=self.parseItem)
         # 计算下一页地址
         cur_url = response.url
         if len(cur_url) < 30:
@@ -49,10 +49,10 @@ class DlkooSpider(BaseSpider):
             np_url = ("http://dlkoo.com/down/5/index_"+str(nxt_pn)+".htm")
             yield Request(url=np_url, callback=self.parse)
 
-    def parse_item(self, response):
-        item = SqlDemoItem()
+    def parseItem(self, response):
         hxs = HtmlXPathSelector(response)
         titles = hxs.select('//title/text()')
+        item = SqlDemoItem()
         item['link'] = response.url
         for title in titles:
             if title:
