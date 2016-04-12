@@ -13,7 +13,6 @@ sys.setdefaultencoding("utf-8")
 
 class SqlDemoSpider(BaseSpider):
     name = "sqlDemo"
-    allowed_domains = ["www.hanfan.cc"]
     start_urls = [
         "http://www.hanfan.cc/hanju/"
     ]

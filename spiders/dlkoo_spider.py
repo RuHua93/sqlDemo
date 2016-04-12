@@ -16,15 +16,13 @@ sys.setdefaultencoding("utf-8")
 
 class DlkooSpider(BaseSpider):
     name = "dlkoo"
-    allowed_domains = ["dlkoo.com"]
     main_domain = "http://dlkoo.com"
     # 前十页基本包含了全部近期资源
     # 故只爬前十页
     start_urls = [
         "http://dlkoo.com/down/5/"
     ]
-    # for i in range(2,10):
-    #     start_urls.append("http://dlkoo.com/down/5/index_"+str(i)+".htm")
+    # 是否继续爬取
     still = True
 
     # 获取大连生活网当前已爬网页的最新更新时间
@@ -43,12 +41,8 @@ class DlkooSpider(BaseSpider):
             last_s = time.strptime(re[0], "%Y-%m-%d %X")
             ye, mo, da, ho, mi, se = last_s[0:6]
             last_scraped = datetime.datetime(ye, mo, da, ho, mi, se)
-    # print "##############"
-    # print last_scraped
 
     def parse(self, response):
-        # print "#############"
-        # print self.still
         if not self.still:
             return
         hxs = HtmlXPathSelector(response)
@@ -61,8 +55,6 @@ class DlkooSpider(BaseSpider):
                 yield Request(url=item_url, callback=self.parse_item)
         cur_url = response.url
         # 计算下一页
-        # print "############"
-        # print cur_url
         if len(cur_url) < 30:
             cur_pn = "1"
         else:
@@ -70,8 +62,6 @@ class DlkooSpider(BaseSpider):
         nxt_pn = string.atoi(cur_pn) + 1
         if nxt_pn <= 10:
             np_url = ("http://dlkoo.com/down/5/index_"+str(nxt_pn)+".htm")
-            # print "##############"
-            # print np_url
             yield  Request(url=np_url, callback=self.parse)
 
     def parse_item(self, response):
