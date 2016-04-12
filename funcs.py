@@ -1,9 +1,10 @@
 # coding=utf-8
 # 通用功能函数
-import datetime
-import string
+import datetime, time
 import traceback
 import sys
+from os import path
+import sqlite3
 
 # 编码改成utf8
 reload(sys)
@@ -56,3 +57,20 @@ def transTime(str):
 # 将datetime类型的日期改为SQLite的标准格式datetime字符串
 def formatTime(time_d):
     return time_d.strftime("%Y-%m-%d %X")
+
+def getLastScraped(keyword):
+    filename = "/tmpdb/test.db"
+    last_scraped = datetime.datetime.min
+    if path.exists(filename):
+        conn = sqlite3.connect(filename)
+        csr = conn.cursor()
+        csr.execute("select max(time) from sqlDemo where src = '"+keyword+"'")
+        res = csr.fetchall()
+        for re in res:
+            if re[0] is None:
+                continue
+            time_s = re[0]
+            last_s = time.strptime(time_s, "%Y-%m-%d %X")
+            ye, mo, da, ho, mi, se = last_s[0:6]
+            last_scraped = datetime.datetime(ye, mo, da, ho, mi, se)
+    return last_scraped

@@ -1,13 +1,10 @@
 # coding=utf-8
 import sys
-import sqlite3
-import datetime, time
 import string
-from os import path
 from scrapy.http import Request
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-from sqlDemo.funcs import transTime, formatTime
+from sqlDemo.funcs import transTime, formatTime, getLastScraped
 from sqlDemo.items import SqlDemoItem
 
 # 编码改成utf8
@@ -28,19 +25,7 @@ class DlkooSpider(BaseSpider):
     # 获取大连生活网当前已爬网页的最新更新时间
     # 只爬取在这之后的网页
     # 如果当前数据库没有记录则设置为 datetime.datetime.min
-    filename = "/tmpdb/test.db"
-    last_scraped = datetime.datetime.min
-    if path.exists(filename):
-        conn = sqlite3.connect(filename)
-        csr = conn.cursor()
-        csr.execute("select max(time) from sqlDemo where src = '大连生活网'")
-        res = csr.fetchall()
-        for re in res:
-            if re[0] is None:
-                continue
-            last_s = time.strptime(re[0], "%Y-%m-%d %X")
-            ye, mo, da, ho, mi, se = last_s[0:6]
-            last_scraped = datetime.datetime(ye, mo, da, ho, mi, se)
+    last_scraped = getLastScraped('大连生活网')
 
     def parse(self, response):
         if not self.still:
@@ -53,8 +38,8 @@ class DlkooSpider(BaseSpider):
             if u"韩剧" in txt:
                 item_url = self.main_domain + hrf
                 yield Request(url=item_url, callback=self.parse_item)
+        # 计算下一页地址
         cur_url = response.url
-        # 计算下一页
         if len(cur_url) < 30:
             cur_pn = "1"
         else:
@@ -62,7 +47,7 @@ class DlkooSpider(BaseSpider):
         nxt_pn = string.atoi(cur_pn) + 1
         if nxt_pn <= 10:
             np_url = ("http://dlkoo.com/down/5/index_"+str(nxt_pn)+".htm")
-            yield  Request(url=np_url, callback=self.parse)
+            yield Request(url=np_url, callback=self.parse)
 
     def parse_item(self, response):
         item = SqlDemoItem()
