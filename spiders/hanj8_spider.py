@@ -14,8 +14,6 @@ sys.setdefaultencoding("utf-8")
 class Hanj8Spider(BaseSpider):
     name = "hanj8"
     main_domain = "http://hanj8.com"
-    # 前十页基本包含了全部近期资源
-    # 故只爬前十页
     start_urls = [
         "http://www.hanj8.com/hanju/"
     ]
@@ -27,6 +25,8 @@ class Hanj8Spider(BaseSpider):
             if not div.select('div[@class="box_tt"]/h2/text()').extract():
                 continue
             year_t = div.select('div[@class="box_tt"]/h2/text()').extract()[0]
+            # 只爬取2016年的资源基本可以满足要求
+            # 绝大部分2015年的剧都完结了
             if year_t == "2016年韩剧":
                 atags = div.select('ul[@class="list"]/a')
                 for atag in atags:
@@ -47,6 +47,9 @@ class Hanj8Spider(BaseSpider):
             if "更新时间" in para:
                 time_s = self.getTime(para)
                 item['time'] = item['ctime'] = time_s
+                break
+        if (not item.has_key('title')) or (not item.has_key('link')) or (not item.has_key('time')):
+            return
         return item
 
     # 从原始字符串提取出更新时间
