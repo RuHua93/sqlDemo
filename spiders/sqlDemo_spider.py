@@ -36,7 +36,6 @@ class SqlDemoSpider(BaseSpider):
                 s_time = time.select('text()').extract()[0]
                 # 处理时间格式
                 item['ctime'] = formatTime(transTime(s_time))
-                item['time'] = item['ctime']
                 break
             for site in sites:
                 if not site.select('@title').extract() or not site.select('@href').extract():
