@@ -60,7 +60,7 @@ def formatTime(time_d):
     return time_d.strftime("%Y-%m-%d %X")
 
 def getLastScraped(keyword):
-    filename = "/tmpdb/test.db"
+    filename = "/tmpdb/newdb.db"
     last_scraped = datetime.datetime.min
     if path.exists(filename):
         conn = sqlite3.connect(filename)

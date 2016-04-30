@@ -7,6 +7,7 @@ class SqlDemoItem(Item):
     title = Field()
     link = Field()
     src = Field()
+    img = Field()
     time = Field()
     ctime = Field()
     rate = Field()
