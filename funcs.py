@@ -6,6 +6,14 @@ import traceback
 import sys
 from os import path
 import sqlite3
+import requests, json
+from sqlDemo.items import SqlDemoItem
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+import smtplib
+import email.mime.multipart
+import email.mime.text
 
 # 编码改成utf8
 reload(sys)
@@ -75,3 +83,43 @@ def getLastScraped(keyword):
             ye, mo, da, ho, mi, se = last_s[0:6]
             last_scraped = datetime.datetime(ye, mo, da, ho, mi, se)
     return last_scraped
+
+# def sendEmail(item, email):
+#
+#
+#     url="http://sendcloud.sohu.com/webapi/mail.send.json"
+#
+#     # 不同于登录SendCloud站点的帐号，您需要登录后台创建发信子帐号，使用子帐号和密码才可以进行邮件的发送。
+#     params = {"api_user": "123456qsr_test_ZPwNvo", \
+#     "api_key" : "LSzocAnSj7utE5ON",\
+#     "from" : "service@sendcloud.im", \
+#     "fromname" : "SendCloud测试邮件", \
+#     "to" : "1377849411@qq.com", \
+#     "subject" : "您订阅的"+str(item["title"])+"更新了,请前往\"我的订阅\"查看(邮件内容为代发服务提供,请忽略)", \
+#     "html": "(请忽略以下内容)你太棒了！你已成功的从SendCloud发送了一封测试邮件，接下来快登录前台去完善账户信息吧！", \
+#     "resp_email_id": "true"
+#     }
+#
+#     r = requests.post(url, files={}, data=params)
+#     print r.text
+#
+#     return
+
+def sendEmail(item, myemail):
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+    msg=email.mime.multipart.MIMEMultipart()
+    msg['from']='13284252997@sina.cn'
+    msg['to']= myemail
+    msg['subject']=u'您订阅的'+item["title"].encode("utf-8")+u'更新了,请点击链接查看'
+    content=str(item["link"])
+    print content
+    txt=email.mime.text.MIMEText(content.encode("utf-8"))
+    msg.attach(txt)
+    print myemail
+
+    smtp=smtplib.SMTP()
+    smtp.connect('smtp.sina.cn')
+    smtp.login('13284252997@sina.cn','123456qsrtt')
+    smtp.sendmail('13284252997@sina.cn',myemail,str(msg))
+    smtp.quit()

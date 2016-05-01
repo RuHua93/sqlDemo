@@ -3,6 +3,7 @@ import sqlite3
 from os import path
 from scrapy import signals
 from scrapy.xlib.pydispatch import dispatcher
+from funcs import sendEmail
 
 
 class SqlDemoPipeline(object):
@@ -18,9 +19,10 @@ class SqlDemoPipeline(object):
         # if (checkUpdate()):
         #     dealOrder()
         csr = self.conn.cursor()
+        self.conn.row_factory=sqlite3.Row
         csr.execute("select title from sqlDemo where link = ?", (item['link'],))
         recs = csr.fetchall()
-        # upd = False
+        upd = False
         # 第一次加入数据库
         img = "http://center.blueidea.com/avatar.php?uid=291426&size=small"
         if len(recs) == 0:
@@ -32,7 +34,19 @@ class SqlDemoPipeline(object):
         elif (len(recs[0]) != 0) and (recs[0][0] != item['title']):
             self.conn.execute("update sqlDemo set title = ?, time = ? where\
                               link = ?", (item['title'], item['time'], item['link']))
-            # upd = True
+            upd = True
+
+        if upd == True:
+            csr.execute("select email from user, od, sqlDemo where od.did=sqlDemo.did and user.uid=od.uid and sqlDemo.link=?", (item["link"],))
+            recs = csr.fetchall()
+            for rec in recs:
+                print "######################"
+                print "######################"
+                print "######################"
+                print "######################"
+                print rec["email"]
+                sendEmail(item, rec["email"])
+
         return item
 
     def initialize(self):
