@@ -37,6 +37,9 @@ class RbwSpider(BaseSpider):
             # 热播网的更新日期没有秒钟这一项
             if li.select(select_str).extract():
                 time_s = li.select(select_str).extract()[0] + ":01"
+            else:
+                time_s = datetime.datetime.now().strftime("%Y-%m-%d %X")
+            # 热播网改了前端代码,看不到更新日期,所以只能加上面一行了
             if time_s:
                 item = SqlDemoItem()
                 item['src'] = "热播网".decode("utf8")
