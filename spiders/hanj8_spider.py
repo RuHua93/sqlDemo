@@ -25,9 +25,9 @@ class Hanj8Spider(BaseSpider):
             if not div.select('div[@class="box_tt"]/h2/text()').extract():
                 continue
             year_t = div.select('div[@class="box_tt"]/h2/text()').extract()[0]
-            # 只爬取2016年的资源基本可以满足要求
-            # 绝大部分2015年的剧都完结了
-            if year_t == "2016年韩剧":
+            # 只爬取2015-2016年的资源基本可以满足要求
+            # 绝大部分2014年以前的剧都完结了
+            if "韩剧" in year_t:
                 atags = div.select('ul[@class="list"]/a')
                 for atag in atags:
                     item_url = self.main_domain + atag.select('@href').extract()[0]
@@ -55,8 +55,10 @@ class Hanj8Spider(BaseSpider):
     # 从原始字符串提取出更新时间
     def getTime(self, para):
         ret = None
+        print "########"
+        print para
         for i in range(len(para)):
-            if i+19 < len(para) and para[i:i+4] == "2016":
+            if i+19 < len(para) and para[i:i+2] == "20":
                 ret = para[i:i+19]
         if ret is None:
             ret = formatTime(datetime.datetime.now())

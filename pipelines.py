@@ -24,7 +24,7 @@ class SqlDemoPipeline(object):
         recs = csr.fetchall()
         upd = False
         # 第一次加入数据库
-        img = "/static/han.png"
+        img = "http://center.blueidea.com/avatar.php?uid=291426&size=small"
         if len(recs) == 0:
             self.conn.execute("insert into sqlDemo(title, link, src, img, time, ctime, rate, rnum) values(?,?,?,?,?,?,?,?)",
                               (item['title'], item['link'], item['src'], img, item['ctime'],
