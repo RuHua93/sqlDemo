@@ -15,9 +15,7 @@ class SqlDemoPipeline(object):
         dispatcher.connect(self.finalize, signals.engine_stopped)
 
     def process_item(self, item, spider):
-        # 此处应加判断逻辑,如果更新则检查订阅表
-        # if (checkUpdate()):
-        #     dealOrder()
+        # 如果更新则检查订阅表
         csr = self.conn.cursor()
         self.conn.row_factory=sqlite3.Row
         csr.execute("select title from sqlDemo where link = ?", (item['link'],))
