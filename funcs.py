@@ -121,6 +121,6 @@ def sendEmail(item, myemail):
 #
 #     smtp=smtplib.SMTP()
 #     smtp.connect('smtp.sina.cn')
-#     smtp.login('13284252997@sina.cn','123456qsrtt')
+#     smtp.login('13284252997@sina.cn','123456qsr??')
 #     smtp.sendmail('13284252997@sina.cn',myemail,str(msg))
 #     smtp.quit()
