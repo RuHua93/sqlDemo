@@ -27,7 +27,6 @@ class SqlDemoPipeline(object):
             self.conn.execute("insert into sqlDemo(title, link, src, img, time, ctime, rate, rnum) values(?,?,?,?,?,?,?,?)",
                               (item['title'], item['link'], item['src'], img, item['ctime'],
                                item['ctime'], item['rate'], item['rnum']))
-            # upd = True
         # 更新数据库
         elif (len(recs[0]) != 0) and (recs[0][0] != item['title']):
             self.conn.execute("update sqlDemo set title = ?, time = ? where\
@@ -38,11 +37,6 @@ class SqlDemoPipeline(object):
             csr.execute("select email from user, od, sqlDemo where od.did=sqlDemo.did and user.uid=od.uid and sqlDemo.link=?", (item["link"],))
             recs = csr.fetchall()
             for rec in recs:
-                print "######################"
-                print "######################"
-                print "######################"
-                print "######################"
-                print rec["email"]
                 sendEmail(item, rec["email"])
 
         return item

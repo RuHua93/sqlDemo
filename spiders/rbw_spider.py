@@ -33,14 +33,13 @@ class RbwSpider(BaseSpider):
         atags = hxs.select('//li[@class="tit"]/a')
 
         for atag in atags:
-            # 热播网的更新日期没有秒钟这一项
             item = SqlDemoItem()
             time_s = datetime.datetime.now().strftime("%Y-%m-%d %X")
             if atag.select('@href').extract():
                 item['link'] = self.main_domain + atag.select('@href').extract()[0]
             else:
                 continue
-            # 热播网改了前端代码,看不到更新日期,所以只能加上面一行了
+
             if atag.select("@title").extract():
                 item['title'] = atag.select('@title').extract()[0]
             else:

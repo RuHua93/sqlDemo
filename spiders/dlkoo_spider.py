@@ -14,8 +14,7 @@ sys.setdefaultencoding("utf-8")
 class DlkooSpider(BaseSpider):
     name = "dlkoo"
     main_domain = "http://dlkoo.com"
-    # 前十页基本包含了全部近期资源
-    # 故只爬前十页
+
     start_urls = [
         "http://dlkoo.com/down/5/"
     ]

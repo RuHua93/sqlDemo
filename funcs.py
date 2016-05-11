@@ -6,14 +6,7 @@ import traceback
 import sys
 from os import path
 import sqlite3
-import requests, json
-from sqlDemo.items import SqlDemoItem
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
-import smtplib
-import email.mime.multipart
-import email.mime.text
+import requests
 
 # 编码改成utf8
 reload(sys)
