@@ -7,3 +7,6 @@ NEWSPIDER_MODULE = 'sqlDemo.spiders'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
 ITEM_PIPELINES=['sqlDemo.pipelines.SqlDemoPipeline']
+
+# 设置延迟防止被封IP
+DOWNLOAD_DELAY = 0.25
